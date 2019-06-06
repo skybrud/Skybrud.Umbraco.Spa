@@ -14,12 +14,13 @@
     <Authors>Anders Bjerner</Authors>
     <Copyright>Copyright © 2019</Copyright>
     <Description>SPA (single page application) package for Umbraco 7.</Description>
+    <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/skybrud/Skybrud.Umbraco.Spa</RepositoryUrl>
   </PropertyGroup>
 
   <PropertyGroup>
     <PackageTags>Skybrud, Umbraco, SPA, Headless</PackageTags>
-    <PackageLicenseUrl>https://github.com/skybrud/Skybrud.Umbraco.Spa/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/skybrud/Skybrud.Umbraco.Spa</PackageProjectUrl>
     <PackageIconUrl>https://www.skybrud.dk/img/5431sk/icon/favicon.ico</PackageIconUrl>
   </PropertyGroup>
@@ -35,9 +36,9 @@
     <PackageReference Include="UmbracoCms.Core" Version="7.7.0" />
   </ItemGroup>
 
-  <!--<PropertyGroup>
-    <DocumentationFile>bin\$(ConfigurationName)\$(TargetFramework)\Skybrud.Essentials.Http.xml</DocumentationFile>
-  </PropertyGroup>-->
+  <PropertyGroup>
+    <DocumentationFile>bin\$(ConfigurationName)\$(TargetFramework)\Skybrud.Umbraco.Spa.xml</DocumentationFile>
+  </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="mkdir $(ProjectDir)bin\Dev\$(TargetFramework)&#xD;&#xA;xcopy $(ProjectDir)bin\$(ConfigurationName)\$(TargetFramework)\$(TargetName).* $(ProjectDir)bin\Dev\$(TargetFramework)\ /y&#xD;&#xA;&quot;$(ProjectDir)..\build\UpdateAssemblyInfoJson.exe&quot; &quot;$(ProjectPath)&quot; &quot;$(TargetPath)&quot;" />
