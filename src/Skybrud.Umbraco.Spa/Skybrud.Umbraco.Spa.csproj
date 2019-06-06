@@ -8,7 +8,7 @@
 
   <PropertyGroup>
     <RootNamespace>Skybrud.Umbraco.Spa</RootNamespace>
-    <Version>2.0.0</Version>
+    <Version>2.0.0-beta001</Version>
     <Company>Skybrud.dk a/s</Company>
     <Product>Skybrud.Umbraco.Spa</Product>
     <Authors>Anders Bjerner</Authors>
