@@ -87,8 +87,9 @@ namespace Skybrud.Umbraco.Spa.Json.Converters {
 
         protected virtual SpaGridControl GetControl(GridControl control) {
 
+            if (control.Value is SpaGridControlValueBase skyBase) return skyBase.GetControlForSpa();
+
             object value;
-            SpaGridEditor editor = GetEditor(control.Editor);
 
             switch (control.Editor.Alias) {
 
@@ -102,7 +103,7 @@ namespace Skybrud.Umbraco.Spa.Json.Converters {
 
             }
 
-            return new SpaGridControl(value, editor);
+            return new SpaGridControl(value, control.Editor.Alias);
 
         }
         
