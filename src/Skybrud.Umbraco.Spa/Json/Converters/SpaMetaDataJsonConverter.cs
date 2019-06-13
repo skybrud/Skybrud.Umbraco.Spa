@@ -7,8 +7,12 @@ using Skybrud.Umbraco.Spa.Models.Meta.OpenGraph;
 
 namespace Skybrud.Umbraco.Spa.Json.Converters {
 
+    /// <summary>
+    /// JSON converter class for serializing an instance of <see cref="SpaMetaData"/> to JSON. This converter does not support deserialization.
+    /// </summary>
     public class SpaMetaDataJsonConverter : JsonConverter {
-
+        
+        /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) {
 
             if (!(value is SpaMetaData)) throw new ArgumentException("Must be an instance of SpaMetaData", nameof(value));
@@ -39,6 +43,12 @@ namespace Skybrud.Umbraco.Spa.Json.Converters {
 
             }
 
+            if (data.HasTwitterCard) {
+                foreach (SpaMetaContent property in data.TwitterCard.ToMeta()) {
+                    AddMetaContent(meta, property.Name, property.Content);
+                }
+            }
+
             if (data.Links.Count > 0) obj.Add("link", JArray.FromObject(data.Links.Where(x => x.IsValid)));
             if (data.Scripts.Count > 0) obj.Add("script", JArray.FromObject(data.Scripts));
 
@@ -48,20 +58,36 @@ namespace Skybrud.Umbraco.Spa.Json.Converters {
 
         }
 
+        /// <summary>
+        /// Adds a new <c>&lt;meta /&gt;</c> element with the specified <paramref name="name"/> and <paramref name="content"/> attributes.
+        /// </summary>
+        /// <param name="meta">The collection to which the <c>&lt;meta /&gt;</c> element will be appended.</param>
+        /// <param name="name">The value of the <c>name</c> attribute.</param>
+        /// <param name="content">The value of the <c>content</c> attribute.</param>
+        /// <param name="mandatory">If <c>true</c> the <c>&lt;meta /&gt;</c> element will be appended regardless of <paramref name="content"/> being empty.</param>
         protected void AddMetaContent(JArray meta, string name, string content, bool mandatory = false) {
-            if (String.IsNullOrWhiteSpace(content) && mandatory == false) return;
-            meta.Add(new JObject { { "name", name }, { "content", content ?? String.Empty } });
+            if (string.IsNullOrWhiteSpace(content) && mandatory == false) return;
+            meta.Add(new JObject { { "name", name }, { "content", content ?? string.Empty } });
         }
 
+        /// <summary>
+        /// Adds a new <c>&lt;meta /&gt;</c> element with the specified <paramref name="property"/> and <paramref name="content"/> attributes.
+        /// </summary>
+        /// <param name="meta">The collection to which the <c>&lt;meta /&gt;</c> element will be appended.</param>
+        /// <param name="property">The value of the <c>property</c> attribute.</param>
+        /// <param name="content">The value of the <c>content</c> attribute.</param>
+        /// <param name="mandatory">If <c>true</c> the <c>&lt;meta /&gt;</c> element will be appended regardless of <paramref name="content"/> being empty.</param>
         protected void AddMetaProperty(JArray meta, string property, string content, bool mandatory = false) {
-            if (String.IsNullOrWhiteSpace(property) && mandatory == false) return;
-            meta.Add(new JObject { { "property", property }, { "content", content ?? String.Empty } });
+            if (string.IsNullOrWhiteSpace(property) && mandatory == false) return;
+            meta.Add(new JObject { { "property", property }, { "content", content ?? string.Empty } });
         }
 
+        /// <inheritdoc />
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public override bool CanConvert(Type objectType) {
             return false;
         }
