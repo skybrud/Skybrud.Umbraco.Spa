@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Skybrud.Umbraco.Spa.Json.Converters;
 using Skybrud.Umbraco.Spa.Models.Meta.OpenGraph;
 using Skybrud.Umbraco.Spa.Models.Meta.Twitter;
@@ -29,6 +31,11 @@ namespace Skybrud.Umbraco.Spa.Models.Meta {
         /// Gets a reference to the <see cref="IPublishedContent"/> representing the current page.
         /// </summary>
         protected IPublishedContent Content { get; }
+
+        /// <summary>
+        /// Gets or sets a list of attributes of the <c>html</c> element.
+        /// </summary>
+        public SpaMetaAttributeList HtmlAttributes { get; set; }
 
         /// <summary>
         /// Gets or sets the canonical URL of the current page.
@@ -108,6 +115,8 @@ namespace Skybrud.Umbraco.Spa.Models.Meta {
 
             Content = content;
 
+            HtmlAttributes = new SpaMetaAttributeList();
+
             Links = new List<SpaMetaLink>();
             Scripts = new List<SpaMetaScript>();
 
@@ -183,11 +192,45 @@ namespace Skybrud.Umbraco.Spa.Models.Meta {
         /// <summary>
         /// Appends the specified <paramref name="script"/>.
         /// </summary>
-        /// <param name="script">An instance of <see cref="script"/> representing the <c>&lt;script&gt;</c> element.</param>
+        /// <param name="script">An instance of <paramref name="script"/> representing the <c>&lt;script&gt;</c> element.</param>
         /// <returns>The added script.</returns>
         public SpaMetaScript AppendScript(SpaMetaScript script) {
             Scripts.Add(script);
             return script;
+        }
+
+        /// <summary>
+        /// Writes the meta data to the specified <paramref name="writer"/>.
+        /// </summary>
+        /// <param name="writer"></param>
+        public virtual void WriteJson(JsonWriter writer) {
+            ToMetaJson()?.WriteTo(writer);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="JObject"/> representing the meta data.
+        /// </summary>
+        public virtual JObject ToMetaJson() {
+
+            JObject obj = new JObject();
+            JArray meta = new JArray();
+
+            obj["title"] = MetaTitle ?? string.Empty;
+            obj["meta"] = meta;
+
+            SpaUtils.Json.AddMetaContent(meta, "description", MetaDescription ?? string.Empty, true);
+            SpaUtils.Json.AddMetaContent(meta, "robots", Robots);
+
+            OpenGraph?.WriteJson(meta);
+            TwitterCard?.WriteJson(meta);
+
+            if (Links.Count > 0) obj.Add("link", JArray.FromObject(Links.Where(x => x.IsValid)));
+            if (Scripts.Count > 0) obj.Add("script", JArray.FromObject(Scripts));
+
+            obj.Add("__dangerouslyDisableSanitizers", new JArray(from str in DangerouslyDisableSanitizers select str));
+
+            return obj;
+
         }
 
         #endregion

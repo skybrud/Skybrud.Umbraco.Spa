@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using Skybrud.Umbraco.Spa.Models.Meta.OpenGraph;
 
 namespace Skybrud.Umbraco.Spa.Models.Meta.Twitter  {
 
@@ -45,22 +47,18 @@ namespace Skybrud.Umbraco.Spa.Models.Meta.Twitter  {
         /// </summary>
         public string ImageText { get; set; }
 
-        public virtual SpaMetaContent[] ToMeta() {
-
-            List<SpaMetaContent> meta = new List<SpaMetaContent> {
-                new SpaMetaContent("twitter:card", Card)
-            };
-
-            if (string.IsNullOrEmpty(Site) == false) meta.Add(new SpaMetaContent("twitter:site", Site.StartsWith("@") ? Site : "@" + Site));
-            if (string.IsNullOrEmpty(Creator) == false) meta.Add(new SpaMetaContent("twitter:creator", Creator.StartsWith("@") ? Creator : "@" + Creator));
-
-            if (string.IsNullOrEmpty(Title) == false) meta.Add(new SpaMetaContent("twitter:title", Title));
-            if (string.IsNullOrEmpty(Description) == false) meta.Add(new SpaMetaContent("twitter:description", Description));
-            if (string.IsNullOrEmpty(Image) == false) meta.Add(new SpaMetaContent("twitter:image", Image));
-            if (string.IsNullOrEmpty(ImageText) == false) meta.Add(new SpaMetaContent("twitter:image:alt", ImageText));
-
-            return meta.ToArray();
-
+        /// <summary>
+        /// Writes the Twitter card data to the specified JSON <paramref name="array"/>.
+        /// </summary>
+        /// <param name="array">The array to which the Twitter card data should be added.</param>
+        public virtual void WriteJson(JArray array) {
+            SpaUtils.Json.AddMetaContent(array, "twitter:card", Card);
+            SpaUtils.Json.AddMetaContent(array, "twitter:site", Site);
+            SpaUtils.Json.AddMetaContent(array, "twitter:creator", Creator);
+            SpaUtils.Json.AddMetaContent(array, "twitter:title", Title);
+            SpaUtils.Json.AddMetaContent(array, "twitter:description", Description);
+            SpaUtils.Json.AddMetaContent(array, "twitter:image", Image);
+            SpaUtils.Json.AddMetaContent(array, "twitter:image:alt", ImageText);
         }
 
     }
