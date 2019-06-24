@@ -1,6 +1,5 @@
 ﻿using System;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Skybrud.Umbraco.Spa.Models.Meta;
 
 namespace Skybrud.Umbraco.Spa.Json.Converters {
@@ -14,30 +13,6 @@ namespace Skybrud.Umbraco.Spa.Json.Converters {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) {
             if (!(value is SpaMetaData data)) throw new ArgumentException("Must be an instance of SpaMetaData", nameof(value));
             data.WriteJson(writer);
-        }
-
-        /// <summary>
-        /// Adds a new <c>&lt;meta /&gt;</c> element with the specified <paramref name="name"/> and <paramref name="content"/> attributes.
-        /// </summary>
-        /// <param name="meta">The collection to which the <c>&lt;meta /&gt;</c> element will be appended.</param>
-        /// <param name="name">The value of the <c>name</c> attribute.</param>
-        /// <param name="content">The value of the <c>content</c> attribute.</param>
-        /// <param name="mandatory">If <c>true</c> the <c>&lt;meta /&gt;</c> element will be appended regardless of <paramref name="content"/> being empty.</param>
-        protected void AddMetaContent(JArray meta, string name, string content, bool mandatory = false) {
-            if (string.IsNullOrWhiteSpace(content) && mandatory == false) return;
-            meta.Add(new JObject { { "name", name }, { "content", content ?? string.Empty } });
-        }
-
-        /// <summary>
-        /// Adds a new <c>&lt;meta /&gt;</c> element with the specified <paramref name="property"/> and <paramref name="content"/> attributes.
-        /// </summary>
-        /// <param name="meta">The collection to which the <c>&lt;meta /&gt;</c> element will be appended.</param>
-        /// <param name="property">The value of the <c>property</c> attribute.</param>
-        /// <param name="content">The value of the <c>content</c> attribute.</param>
-        /// <param name="mandatory">If <c>true</c> the <c>&lt;meta /&gt;</c> element will be appended regardless of <paramref name="content"/> being empty.</param>
-        protected void AddMetaProperty(JArray meta, string property, string content, bool mandatory = false) {
-            if (string.IsNullOrWhiteSpace(property) && mandatory == false) return;
-            meta.Add(new JObject { { "property", property }, { "content", content ?? string.Empty } });
         }
 
         /// <inheritdoc />
