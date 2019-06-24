@@ -3,9 +3,11 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Skybrud.Umbraco.Spa.Json.Converters;
+using Skybrud.Umbraco.Spa.Models.Meta.Attributes;
 using Skybrud.Umbraco.Spa.Models.Meta.OpenGraph;
 using Skybrud.Umbraco.Spa.Models.Meta.Twitter;
 using Umbraco.Core.Models;
+using Umbraco.Web;
 
 // ReSharper disable UnusedParameter.Local
 
@@ -35,7 +37,17 @@ namespace Skybrud.Umbraco.Spa.Models.Meta {
         /// <summary>
         /// Gets or sets a list of attributes of the <c>html</c> element.
         /// </summary>
-        public SpaMetaAttributeList HtmlAttributes { get; set; }
+        public SpaMetaHtmlAttributeList HtmlAttributes { get; set; }
+
+        /// <summary>
+        /// Gets or sets a list of attributes of the <c>head</c> element.
+        /// </summary>
+        public SpaMetaAttributeList HeadAttributes { get; set; }
+
+        /// <summary>
+        /// Gets or sets a list of attributes of the <c>body</c> element.
+        /// </summary>
+        public SpaMetaAttributeList BodyAttributes { get; set; }
 
         /// <summary>
         /// Gets or sets the canonical URL of the current page.
@@ -115,7 +127,13 @@ namespace Skybrud.Umbraco.Spa.Models.Meta {
 
             Content = content;
 
-            HtmlAttributes = new SpaMetaAttributeList();
+            HtmlAttributes = new SpaMetaHtmlAttributeList {
+                Language = content.GetCulture().TwoLetterISOLanguageName
+            };
+
+            HeadAttributes = new SpaMetaAttributeList();
+            BodyAttributes = new SpaMetaAttributeList();
+
 
             Links = new List<SpaMetaLink>();
             Scripts = new List<SpaMetaScript>();
@@ -216,6 +234,35 @@ namespace Skybrud.Umbraco.Spa.Models.Meta {
             JArray meta = new JArray();
 
             obj["title"] = MetaTitle ?? string.Empty;
+
+            // Append the <html> attributes (if any)
+            if (HtmlAttributes != null && HtmlAttributes.Count > 0) {
+                JObject htmlAttrs = new JObject();
+                foreach (var attr in HtmlAttributes) {
+                    htmlAttrs.Add(attr.Key, attr.Value);
+                }
+                obj["htmlAttrs"] = htmlAttrs;
+            }
+
+            // Append the <head> attributes (if any)
+            if (HeadAttributes != null && HeadAttributes.Count > 0) {
+                JObject headAttrs = new JObject();
+                foreach (var attr in HeadAttributes) {
+                    headAttrs.Add(attr.Key, attr.Value);
+                }
+                obj["headAttrs"] = headAttrs;
+            }
+
+            // Append the <body> attributes (if any)
+            if (BodyAttributes != null && BodyAttributes.Count > 0) {
+                JObject bodyAttrs = new JObject();
+                foreach (var attr in BodyAttributes) {
+                    bodyAttrs.Add(attr.Key, attr.Value);
+                }
+                obj["bodyAttrs"] = bodyAttrs;
+            }
+
+
             obj["meta"] = meta;
 
             SpaUtils.Json.AddMetaContent(meta, "description", MetaDescription ?? string.Empty, true);

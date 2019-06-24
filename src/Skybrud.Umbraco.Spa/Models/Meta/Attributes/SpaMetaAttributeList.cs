@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Skybrud.Umbraco.Spa.Models.Meta  {
+namespace Skybrud.Umbraco.Spa.Models.Meta.Attributes  {
 
     /// <summary>
     /// Class representing a list of attributes of an HTML element.
@@ -14,20 +14,17 @@ namespace Skybrud.Umbraco.Spa.Models.Meta  {
         #region Properties
 
         /// <summary>
+        /// Gets the amount of attributes in the list.
+        /// </summary>
+        public int Count => _attributes.Count;
+
+        /// <summary>
         /// Gets or sets the value of the attribute with the specified <paramref name="name"/>.
         /// </summary>
         /// <param name="name">The name of the attribute.</param>
         public string this[string name] {
             get => _attributes.TryGetValue(name, out string value) ? value : null;
             set => _attributes[name] = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the the value of the <c>lang</c> attribute.
-        /// </summary>
-        public string Language {
-            get => _attributes.TryGetValue("lang", out string value) ? value : null;
-            set => _attributes.Add("lang", value);
         }
 
         /// <summary>
