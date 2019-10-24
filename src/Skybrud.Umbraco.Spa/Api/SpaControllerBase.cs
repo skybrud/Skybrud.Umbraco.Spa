@@ -75,14 +75,34 @@ namespace Skybrud.Umbraco.Spa.Api {
         //    //return CreateSpaResponse(JsonMetaResponse.GetError(HttpStatusCode.MovedPermanently, "Page has moved"));
         //}
 
+        /// <summary>
+        /// Returns a JSON response for a temporary SPA redirect.
+        /// </summary>
+        /// <param name="request">The current request.</param>
+        /// <param name="destinationUrl">The destination URL of the redirect.</param>
+        /// <returns>An instance of <see cref="HttpResponseMessage"/>.</returns>
         protected virtual HttpResponseMessage ReturnRedirect(SpaRequest request, string destinationUrl) {
 		    return ReturnRedirect(request, destinationUrl, HttpStatusCode.TemporaryRedirect);
 	    }
 
+        /// <summary>
+        /// Returns a JSON response for a SPA redirect.
+        /// </summary>
+        /// <param name="request">The current request.</param>
+        /// <param name="destinationUrl">The destination URL of the redirect.</param>
+        /// <param name="permanent">Whether the redirect is permanent (<see cref="HttpStatusCode.MovedPermanently"/>) or temporary (<see cref="HttpStatusCode.TemporaryRedirect"/>).</param>
+        /// <returns>An instance of <see cref="HttpResponseMessage"/>.</returns>
         protected virtual HttpResponseMessage ReturnRedirect(SpaRequest request, string destinationUrl, bool permanent) {
             return ReturnRedirect(request, destinationUrl, permanent ? HttpStatusCode.MovedPermanently : HttpStatusCode.TemporaryRedirect);
         }
 
+        /// <summary>
+        /// Returns a JSON response for a SPA redirect.
+        /// </summary>
+        /// <param name="request">The current request.</param>
+        /// <param name="destinationUrl">The destination URL of the redirect.</param>
+        /// <param name="statusCode">The status code of the response - eg. <see cref="HttpStatusCode.MovedPermanently"/>.</param>
+        /// <returns>An instance of <see cref="HttpResponseMessage"/>.</returns>
         protected virtual HttpResponseMessage ReturnRedirect(SpaRequest request, string destinationUrl, HttpStatusCode statusCode) {
 
             // Initialize the "data" object for the response
