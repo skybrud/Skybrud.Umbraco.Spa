@@ -76,7 +76,7 @@ namespace Skybrud.Umbraco.Spa.Api {
         //}
 
         protected virtual HttpResponseMessage ReturnRedirect(SpaRequest request, string destinationUrl) {
-		    return ReturnRedirect(request, destinationUrl, HttpStatusCode.MovedPermanently);
+		    return ReturnRedirect(request, destinationUrl, HttpStatusCode.TemporaryRedirect);
 	    }
 
         protected virtual HttpResponseMessage ReturnRedirect(SpaRequest request, string destinationUrl, bool permanent) {
