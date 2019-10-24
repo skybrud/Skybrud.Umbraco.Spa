@@ -86,17 +86,16 @@ namespace Skybrud.Umbraco.Spa.Api {
         protected virtual HttpResponseMessage ReturnRedirect(SpaRequest request, string destinationUrl, HttpStatusCode statusCode) {
 
             // Initialize the "data" object for the response
-            var body = new {
-                url = destinationUrl
+            var data = new {
+                url = destinationUrl,
+                permanent = statusCode == HttpStatusCode.MovedPermanently
             };
 
-            // Append scheme/protocol and host name if not already present
-            if (destinationUrl.StartsWith("/")) {
-                destinationUrl = $"{request.Protocol}://{request.HostName}{destinationUrl}";
-            }
+            // Initialize the response body (including the correct status code)
+            JsonMetaResponse body = JsonMetaResponse.GetError(statusCode, "Page has moved", data);
 
-            // Generate the response
-            return CreateSpaResponse(JsonMetaResponse.GetError(statusCode, "Page has moved", body));
+            // Generate the response (using "418 I'm a teapot" as the status code to support older browsers and systems)
+            return CreateSpaResponse(SpaConstants.Teapot, body);
 
         }
 
