@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web;
+using Skybrud.Essentials.Collections.Extensions;
 using Skybrud.Essentials.Enums;
-using Skybrud.Essentials.Strings;
-using Skybrud.Essentials.Strings.Extensions;
 
 namespace Skybrud.Umbraco.Spa.Models {
 
@@ -27,7 +26,7 @@ namespace Skybrud.Umbraco.Spa.Models {
         /// <c>appSiteId</c> parameters in the query string.
         /// </summary>
         public int SiteId { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the URL of the requested page.
         /// </summary>
@@ -45,7 +44,7 @@ namespace Skybrud.Umbraco.Spa.Models {
 
         /// <summary>
         /// Gets a list of the requested <see cref="SpaApiPart"/> based on the <c>parts</c> query string parameter. If
-        /// empty or not specified specified, all parts are assumed. 
+        /// empty or not specified specified, all parts are assumed.
         /// </summary>
         public List<SpaApiPart> Parts { get; set; }
 
@@ -134,35 +133,35 @@ namespace Skybrud.Umbraco.Spa.Models {
 
             // Get a reference to the current request
             HttpRequestBase r = context.Request;
-            
+
             // Get the host name from the query
-            string appHost = r.QueryString["appHost"];
+            string appHost = r.QueryString.GetString("appHost");
 
             // Get the protocol from the query
-            string appProtocol = r.QueryString["appProtocol"];
+            string appProtocol = r.QueryString.GetString("appProtocol");
 
             // Use the current URL as fallback for "appHost" and "appProtocol"
             HostName = string.IsNullOrWhiteSpace(appHost) ? r.Url?.Host : appHost;
             Protocol = string.IsNullOrWhiteSpace(appProtocol) ? r.Url?.Scheme : appProtocol;
 
             // Parse the "navLevels" and "navContext" parameters from the query string
-            NavLevels = r.QueryString["navLevels"].ToInt32(1);
-            NavContext = StringUtils.ParseBoolean(r.QueryString["navContext"]);
+            NavLevels = r.QueryString.GetInt32("navLevels", 1);
+            NavContext = r.QueryString.GetBoolean("navContext");
 
             // Parse the requests "parts"
-            Parts = GetParts(r.QueryString["parts"]);
+            Parts = GetParts(r.QueryString.GetString("parts"));
 
             // Get the URL and URI of the requested page
-            Url = r.QueryString["url"];
+            Url = r.QueryString.GetString("url");
             Uri = new Uri($"{Protocol}://{HostName}{Url}");
 
             // Parse the "siteId" and "pageId" parameters ("appSiteId" and "nodeId" are checked for legacy support)
-            SiteId = Math.Max(r.QueryString["siteId"].ToInt32(-1), r.QueryString["appSiteId"].ToInt32(-1));
-            PageId = Math.Max(r.QueryString["pageId"].ToInt32(-1), r.QueryString["nodeId"].ToInt32(-1));
+            SiteId = Math.Max(r.QueryString.GetInt32("siteId", -1), r.QueryString.GetInt32("appSiteId", -1));
+            PageId = Math.Max(r.QueryString.GetInt32("pageId", -1), r.QueryString.GetInt32("nodeId", -1));
 
             QueryString = r.QueryString;
 
-            Culture = r.QueryString["culture"];
+            Culture = r.QueryString.GetString("culture");
 
             // Determine whether the current request is in debug mode
             if (helper.TryGetPreviewId(Url, out int previewId)) {
@@ -171,7 +170,7 @@ namespace Skybrud.Umbraco.Spa.Models {
             }
 
             // Determine whether caching should be enabled
-            EnableCaching = context.IsDebuggingEnabled == false && StringUtils.ParseBoolean(r.QueryString["cache"], true) && IsPreview == false;
+            EnableCaching = context.IsDebuggingEnabled == false && r.QueryString.GetBoolean("cache", true) && IsPreview == false;
 
             ShowHtmlErrors = context.IsDebuggingEnabled && context.IsCustomErrorEnabled == false && context.Request.Headers["Accept"].Contains("text/html");
 
@@ -187,7 +186,7 @@ namespace Skybrud.Umbraco.Spa.Models {
         /// <param name="parts">The string with the parts.</param>
         /// <returns>An an instance of <see cref="List{SpaApiPart}"/> containing each <see cref="SpaApiPart"/> specified in <paramref name="parts"/>.</returns>
         private static List<SpaApiPart> GetParts(string parts = "") {
-            
+
             // No parts means all parts
             if (string.IsNullOrWhiteSpace(parts)) return new List<SpaApiPart> { SpaApiPart.Content, SpaApiPart.Navigation, SpaApiPart.Site };
 
