@@ -6,8 +6,7 @@ using Skybrud.Essentials.Strings;
 using Skybrud.Umbraco.GridData;
 using Skybrud.Umbraco.Spa.Json.Converters;
 using System.Web;
-using Skybrud.Essentials.Json.Converters;
-using Umbraco.Core.Models.PublishedContent;
+using Skybrud.Essentials.Json.Newtonsoft.Converters;
 
 #pragma warning disable 1591
 
@@ -88,7 +87,7 @@ namespace Skybrud.Umbraco.Spa.Json.Resolvers {
 
             // Get a JsonProperty instance from the parent
             JsonProperty property = base.CreateProperty(member, memberSerialization);
-            
+
             // Should we serialize the property?
 			property.ShouldSerialize = instance => ShouldSerialize(member, property);
 
@@ -132,8 +131,8 @@ namespace Skybrud.Umbraco.Spa.Json.Resolvers {
             if (objectType == typeof(GridDataModel)) {
                 contract.Converter = GridConverter;
             } else if (objectType == typeof(HtmlString) || objectType == typeof(IHtmlString)) {
-                contract.Converter = new ToStringJsonConverter();
-            }		
+                contract.Converter = new StringJsonConverter();
+            }
 
             return contract;
 
